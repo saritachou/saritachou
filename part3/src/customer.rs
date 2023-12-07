@@ -2,7 +2,7 @@ use petgraph::graph::{Graph, NodeIndex};
 use petgraph::Undirected;
 use crate::graph_utils::determine_neighbor;
 
-// create a struct for catergorical variables' one-hot encoding 
+// create a struct for categorical variables' one-hot encoding 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct OneHotEncoding {
     pub education_level: String,
@@ -61,7 +61,7 @@ pub fn print_top_shared_characteristics(
                 *total_characteristic_counts.entry(characteristic.clone()).or_insert(0) += count;
 
                 // sort characteristics into the categories they belong to 
-                // do this by splitting the characteristic names by ":", the string before is category lable, after is characteristic
+                // do this by splitting the characteristic names by ":", the string before is category label, after is characteristic
                 let parts: Vec<&str> = characteristic.splitn(2, ":").collect(); 
                 if parts.len() == 2 {
                     let key = parts[0].trim().to_string();
@@ -77,13 +77,13 @@ pub fn print_top_shared_characteristics(
         }
     }
 
-    // Calculate the sum of total counts of shared characteristic across all categories (for percentage calculation later)
+    // Calculate the sum of total counts of shared characteristics across all categories (for percentage calculation later)
     let total_sum: usize = separated_counts.iter().flat_map(|(_, entry_counts)| entry_counts.values()).sum();
 
-    // Print the total counts for each categories and the characteristics within each category
+    // Print the total counts for each category and the characteristics within each category
     println!("Prevalent characteristic categories and their compositions:");
     for (key, entry_counts) in separated_counts.iter() { // iterate through each category and their characteristics 
-        let total_count: usize = entry_counts.values().cloned().sum(); // calculate total characteritics count of each category
+        let total_count: usize = entry_counts.values().cloned().sum(); // calculate total characteristics count of each category
         let key_percentage: f64 = (total_count as f64 / total_sum as f64) * 100.00; // calculate the percentage of each category 
         let rounded_key_percentage = (key_percentage * 10.0).round() / 10.0; // round the percentage 
 
