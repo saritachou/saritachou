@@ -1,5 +1,6 @@
 use petgraph::graph::{Graph, NodeIndex};
 use petgraph::Undirected;
+use crate::graph_utils::determine_neighbor;
 
 // create a struct for catergorical variables' one-hot encoding 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -206,6 +207,7 @@ pub fn map_category(value: &str) -> String {
 
 pub mod tests {
     use super::*;
+
     // test whether the get_shared_characteristics function is working correctly
     #[test]
     pub fn test_shared_characteristics() {
@@ -215,12 +217,25 @@ pub mod tests {
 
         // Use the get_shared_characteristics function to find shared characteristics
         let shared_characteristics = get_shared_characteristics(&customer1, &customer2);
-
+        let correct_shared_characteristics =  ["Education Level: Graduate", "Marital Status: Single", "Income Range: $40K - $60K", "Card Type: Silver"];
         // Verify that the shared characteristics are correct
-        assert_eq!(shared_characteristics.len(), 4); // Adjust the count based on the actual shared characteristics
+        assert_eq!(shared_characteristics, correct_shared_characteristics);
+    }
+    #[test]
+    pub fn test_determine_neighbor(){
+        // Create two customers with known characteristics
+        let customer1 = create_sample_customer1();
+        let customer2 = create_sample_customer2();
+        // Use the determine_neighbor function to see whether the two customers fit the condition to be neighbors (in the undirected graph)
+        let test_neighbor = determine_neighbor(&customer1, &customer2);
+        let correct_neighbor = true;
+        // Verify that determine_neighbor correctly determines the two customers are neighbors  
+        assert_eq!(test_neighbor, correct_neighbor);
     }
 
-    // Helper functions to create a sample customer with known characteristics
+    //pub fn determine_neighbor(customer_a: &Customer, customer_b: &Customer) -> bool {
+
+    // Helper functions to create two sample customers with known characteristics
     pub fn create_sample_customer1() -> Customer {
         Customer {
             churn_status: "Existing Customer".to_string(),
