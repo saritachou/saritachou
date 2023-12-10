@@ -12,7 +12,7 @@ pub fn main() -> Result<(), Box<dyn Error>> {
     let mut rdr = csv::Reader::from_path("BankChurners.csv")?;
     let customers: Vec<Customer> = rdr
         .records()
-        .take(700)
+        .take(1000)
         .map(|result| {
             let record = result?; // unwrap result to get the record
             Ok::<Customer, Box<dyn Error>>(Customer {
@@ -29,8 +29,8 @@ pub fn main() -> Result<(), Box<dyn Error>> {
                 num_product_purchased: record[10].parse().unwrap_or(0),
                 mon_inactive: record[11].parse().unwrap_or(0),
                 num_contact: record[12].parse().unwrap_or(0),
-                card_credit_limit: record[13].parse().unwrap_or(0),
-                evolving_bal: record[14].parse().unwrap_or(0),
+                //card_credit_limit: record[13].parse().unwrap_or(0),
+                //evolving_bal: record[14].parse().unwrap_or(0),
                 transactions_amount: record[17].parse().unwrap_or(0),
                 num_transctions: record[18].parse().unwrap_or(0),
                 avg_card_utilize: record[20].parse().unwrap_or(0.0),
@@ -47,8 +47,8 @@ pub fn main() -> Result<(), Box<dyn Error>> {
     let churn_centrality = calculate_centrality(&graph, &churn_customers); // Calculate centrality for churned customers
     let not_churn_centrality = calculate_centrality(&graph, &not_churn_customers);  // Calculate centrality for not churned customers
 
-    let churn_high_centrality_nodes = identify_high_centrality_nodes(&churn_centrality); // Identify high centrality nodes for churned customers
-    let not_churn_high_centrality_nodes = identify_high_centrality_nodes(&not_churn_centrality);// Identify high centrality nodes for churned customers
+    let churn_high_centrality_nodes = identify_high_centrality_nodes(&churn_centrality, 1.1); // Identify high centrality nodes for churned customers
+    let not_churn_high_centrality_nodes = identify_high_centrality_nodes(&not_churn_centrality, 1.1);// Identify high centrality nodes for churned customers
 
     // Print high centrality nodes for churned customers and the top 4 shared characteristics between those nodes and their neighbors 
     println!("Churn High Centrality Nodes");

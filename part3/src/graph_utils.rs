@@ -61,13 +61,13 @@ pub fn determine_neighbor(customer_a: &Customer, customer_b: &Customer) -> bool 
         shared_characteristics_count += 1;
     }
 
-    if in_same_group(&customer_a.card_credit_limit.to_string(), &customer_b.card_credit_limit.to_string(), &vec!["5000<", "5000-10000", "10000-15000", "15000-20000","20000-25000","25000-30000",">30000"]) {
-        shared_characteristics_count += 1;
-    }
+    //if in_same_group(&customer_a.card_credit_limit.to_string(), &customer_b.card_credit_limit.to_string(), &vec!["5000<", "5000-10000", "10000-15000", "15000-20000","20000-25000","25000-30000",">30000"]) {
+       // shared_characteristics_count += 1;
+    //}
 
-    if in_same_group(&customer_a.evolving_bal.to_string(), &customer_b.evolving_bal.to_string(), &vec!["500<", "500-1000", "1000-1500","1500-2000",">2000"]) {
-        shared_characteristics_count += 1;
-    }
+    //if in_same_group(&customer_a.evolving_bal.to_string(), &customer_b.evolving_bal.to_string(), &vec!["500<", "500-1000", "1000-1500","1500-2000",">2000"]) {
+        //shared_characteristics_count += 1;
+    //}
     if in_same_group(&customer_a.transactions_amount.to_string(), &customer_b.transactions_amount.to_string(), &vec!["500<", "500-1000", "1000-1500","1500-2000",">2000"]) {
         shared_characteristics_count += 1;
     }
@@ -80,16 +80,16 @@ pub fn determine_neighbor(customer_a: &Customer, customer_b: &Customer) -> bool 
     }
 
     // Combine card_credit_limit and evolving_bal as a percentage
-    let percentage_threshold = 0.8; // Example threshold for percentage similarity
-    let combined_percentage_a = (customer_a.evolving_bal as f64 / customer_a.card_credit_limit as f64) * 100.0;
-    let combined_percentage_b = (customer_b.evolving_bal as f64 / customer_b.card_credit_limit as f64) * 100.0;
+    //let percentage_threshold = 0.8; // Example threshold for percentage similarity
+    //let combined_percentage_a = (customer_a.evolving_bal as f64 / customer_a.card_credit_limit as f64) * 100.0;
+   // let combined_percentage_b = (customer_b.evolving_bal as f64 / customer_b.card_credit_limit as f64) * 100.0;
 
-    if (combined_percentage_a - combined_percentage_b).abs() < percentage_threshold { // Check and increment count for combined characteristics
-        shared_characteristics_count += 1;
-    }
+   // if (combined_percentage_a - combined_percentage_b).abs() < percentage_threshold { // Check and increment count for combined characteristics
+        //shared_characteristics_count += 1;
+   // }
 
     // Adjust the threshold as needed; if the number of shared characteristic is above this threshold, we connect the two customers
-    shared_characteristics_count >= 3
+    shared_characteristics_count >= 2
 }
 
 // Function to calculate centrality for each node in the graph
@@ -97,18 +97,24 @@ pub fn determine_neighbor(customer_a: &Customer, customer_b: &Customer) -> bool 
 pub fn calculate_centrality(graph: &Graph<&Customer, (), Undirected>, customers: &[Customer]) -> HashMap<NodeIndex, f64> {
     let petgraph_indices: Vec<NodeIndex> = customers.iter().enumerate().map(|(i, _)| NodeIndex::new(i)).collect(); // Create node indices for customers
     let mut all_distances: HashMap<NodeIndex, HashMap<NodeIndex, f64>> = HashMap::new();// HashMap to store distances between nodes
-    for node in &petgraph_indices {// Iterate through each node in the graph
+    for node in &petgraph_indices {
         let mut distances: HashMap<NodeIndex, f64> = HashMap::new();
-        for nodew in &petgraph_indices { // Iterate through each node again to calculate distances between every pair of nodes 
-            let distance: HashMap<_, _> = dijkstra(graph, *node, Some(*nodew), |_edge| 1.0); // Use Dijkstra's algorithm to calculate the shortest distances between each pair of nodes 
-            distances.insert(*nodew, distance[&nodew].clone()); // Insert the distance into the HashMap
+        for nodew in &petgraph_indices {
+            if node != nodew {
+                if let Some(distance) = all_distances.get(nodew).and_then(|map| map.get(node)) {
+                    distances.insert(*nodew, *distance);
+                } else {
+                    let distance_map = dijkstra(graph, *node, Some(*nodew), |_edge| 1.0);
+                    let distance = *distance_map.get(&nodew).unwrap_or(&f64::INFINITY);
+                    distances.insert(*nodew, distance);
+                }
+            }
         }
-        all_distances.insert(*node, distances); // Insert the HashMap of distances for the current node into the outer HashMap
+        all_distances.insert(*node, distances);
     }
      //calculate centrality of each nodes using normalized closeness centrality
-    let centrality: HashMap<_, _> = petgraph_indices.iter().map(|&node| {
-        let distance_sum: f64 = all_distances[&node].values().map(|&weight| weight).sum(); // Sum of distances from the current node to all other nodes
-        //using the normalized centrality formula and not the harmonic centrality formula so we can make comparisons between nodes in graphs with different sizes (churn and not churn graphs)
+     let centrality: HashMap<_, _> = petgraph_indices.iter().map(|&node| {
+        let distance_sum: f64 = all_distances[&node].values().copied().sum();
         let centrality = (customers.len() - 1) as f64 / distance_sum;
         (node, centrality)
     }).collect();
@@ -117,10 +123,10 @@ pub fn calculate_centrality(graph: &Graph<&Customer, (), Undirected>, customers:
 }
 
 // Function to identify nodes with high centrality
-pub fn identify_high_centrality_nodes(centrality: &HashMap<NodeIndex, f64>) -> Vec<NodeIndex> {
-    let threshold = centrality.values().sum::<f64>() / centrality.len() as f64; // Threshold for identifying high centrality nodes
+pub fn identify_high_centrality_nodes(centrality: &HashMap<NodeIndex, f64>, threshold_factor: f64) -> Vec<NodeIndex> {
+    let threshold = threshold_factor * centrality.values().sum::<f64>() / centrality.len() as f64; // Adjusted threshold
     centrality.iter().filter_map(|(&node, &centrality)| {
-        if centrality > threshold { // Return the node index if its centrality is above the threshold
+        if centrality > threshold {// Return the node index if its centrality is above the threshold
             Some(node)
         } else {
             None
