@@ -24,8 +24,6 @@ pub struct Customer {
     pub num_product_purchased: i32, // number of products the customer purchased from the bank
     pub mon_inactive: i32, // number of months the customer's card is inactive
     pub num_contact: i32, // number of times the banks contacted the customer
-    //pub card_credit_limit: i32, // card's credit limit in dollars 
-    //pub evolving_bal: i32, // evolving balance of card (available balance left) in dollars
     pub transactions_amount: i32, // dollar amount of card transactions 
     pub num_transctions: i32, // number of card transactions in the pat 12 months
     pub avg_card_utilize: f64, // Average Card Utilization Ratio (divide your balance by your credit limit)
@@ -167,15 +165,6 @@ pub fn get_shared_characteristics(customer_a: &Customer, customer_b: &Customer) 
     if is_similar(&customer_a.num_contact.to_string(), &customer_b.num_contact.to_string()) {// Check and add shared characteristics for the number of contacts from the bank
         shared_characteristics.push(format!("Number of Contacts from Bank (past 12 months): {}", customer_a.num_contact));
     }
-    // Check and add shared characteristics for card credit limit; create groups and compare whether two nodes are in the same group
-   //if in_same_group(&customer_a.card_credit_limit.to_string(), &customer_b.card_credit_limit.to_string(), &vec!["5000<", "5000-10000", "10000-15000", "15000-20000","20000-25000","25000-30000",">30000"]) {
-     //   shared_characteristics.push(format!("Card's Credit Limit: {}", &customer_a.card_credit_limit));
-    //}
-    // Check and add shared characteristics for evolving balance on card; create groups and compare whether two nodes are in the same group
-   // if in_same_group(&customer_a.evolving_bal.to_string(), &customer_b.evolving_bal.to_string(), &vec!["500<", "500-1000", "1000-1500","1500-2000",">2000"]) {
-        //shared_characteristics.push(format!("Evolving Balance on Card: {}", &customer_a.evolving_bal));
-    //}
-    // Check and add shared characteristics for total dollar amount of transactions via card骯create groups and compare whether two nodes are in the same group
     if in_same_group(&customer_a.transactions_amount.to_string(), &customer_b.transactions_amount.to_string(), &vec!["500<", "500-1000", "1000-1500","1500-2000",">2000"]) {
         shared_characteristics.push(format!("Total Dollar Amount of Transaction via Card: {}", &customer_a.transactions_amount));
     }
