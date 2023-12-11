@@ -60,14 +60,6 @@ pub fn determine_neighbor(customer_a: &Customer, customer_b: &Customer) -> bool 
     if is_similar(&customer_a.num_contact.to_string(), &customer_b.num_contact.to_string()) {
         shared_characteristics_count += 1;
     }
-
-    //if in_same_group(&customer_a.card_credit_limit.to_string(), &customer_b.card_credit_limit.to_string(), &vec!["5000<", "5000-10000", "10000-15000", "15000-20000","20000-25000","25000-30000",">30000"]) {
-       // shared_characteristics_count += 1;
-    //}
-
-    //if in_same_group(&customer_a.evolving_bal.to_string(), &customer_b.evolving_bal.to_string(), &vec!["500<", "500-1000", "1000-1500","1500-2000",">2000"]) {
-        //shared_characteristics_count += 1;
-    //}
     if in_same_group(&customer_a.transactions_amount.to_string(), &customer_b.transactions_amount.to_string(), &vec!["500<", "500-1000", "1000-1500","1500-2000",">2000"]) {
         shared_characteristics_count += 1;
     }
@@ -78,16 +70,6 @@ pub fn determine_neighbor(customer_a: &Customer, customer_b: &Customer) -> bool 
     if in_same_group(&customer_a.avg_card_utilize.to_string(), &customer_b.avg_card_utilize.to_string(), &vec!["<0.100","0.100-0.200","0.200-0.300","0.300-0.400",">0.400"]) {
         shared_characteristics_count += 1;
     }
-
-    // Combine card_credit_limit and evolving_bal as a percentage
-    //let percentage_threshold = 0.8; // Example threshold for percentage similarity
-    //let combined_percentage_a = (customer_a.evolving_bal as f64 / customer_a.card_credit_limit as f64) * 100.0;
-   // let combined_percentage_b = (customer_b.evolving_bal as f64 / customer_b.card_credit_limit as f64) * 100.0;
-
-   // if (combined_percentage_a - combined_percentage_b).abs() < percentage_threshold { // Check and increment count for combined characteristics
-        //shared_characteristics_count += 1;
-   // }
-
     // Adjust the threshold as needed; if the number of shared characteristic is above this threshold, we connect the two customers
     shared_characteristics_count >= 2
 }
