@@ -30,7 +30,7 @@ pub fn determine_neighbor(customer_a: &Customer, customer_b: &Customer) -> bool 
     let in_same_group = |value_a: &str, value_b: &str, groups: &[&str]| { // Closure to check if two values are in the same group
         groups.iter().any(|&group| value_a == group && value_b == group)
     };
-    if is_similar(&customer_a.age.to_string(), &customer_b.age.to_string()) { // Check and increment count for shared characteristics for age
+    if in_same_group(&customer_a.age.to_string(), &customer_b.age.to_string(), &vec!["20-30", "30-40", "40-50", ">50"]) {// Check and increment count for shared characteristics for months with the bank
         shared_characteristics_count += 1;
     }
     if is_similar(&customer_a.one_hot_encoding.education_level, &customer_b.one_hot_encoding.education_level) { // Check and increment count for shared characteristics for education level
