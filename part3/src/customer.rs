@@ -137,7 +137,7 @@ pub fn get_shared_characteristics(customer_a: &Customer, customer_b: &Customer) 
     let in_same_group = |value_a: &str, value_b: &str, groups: &[&str]| { // Closure to check if two values are in the same group
         groups.iter().any(|&group| value_a == group && value_b == group)
     };
-    if is_similar(&customer_a.age.to_string(), &customer_b.age.to_string()) {// Check and add shared characteristics for age
+    if in_same_group(&customer_a.age.to_string(), &customer_b.age.to_string(), &vec!["20-30", "30-40", "40-50", ">50"]) { // create groups and compare whether two nodes are in the same group
         shared_characteristics.push(format!("Age: {}", customer_a.age));
     }
     if is_similar(&customer_a.one_hot_encoding.education_level, &customer_b.one_hot_encoding.education_level) { // Check and add shared characteristics for education level
